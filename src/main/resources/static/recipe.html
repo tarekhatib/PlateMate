@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Recipe Details</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="recipe.js" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+<!-- HEADER -->
+<header class="site-header">
+    <div class="header-inner">
+        <!-- Logo SVG -->
+        <a href="feed.html">
+          <img src="plateMate.svg" alt="PlateMate Logo" class="logo" />
+        </a>
+        <!-- Search bar -->
+        <input id="search-input" type="text"
+               placeholder="Search recipes…"
+               class="search-bar" />
+        <!-- Username display -->
+        <div class="user-dropdown">
+            <button id="username-display" class="username-display">👤</button>
+            <div id="user-menu" class="user-menu hidden">
+                <button onclick="window.location.href='myposts.html'">My Posts</button>
+                <button id="logout-btn">Log Out</button>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <main class="recipe-detail-container">
+      <div class="recipe-detail">
+        <h1 id="detail-name">Loading...</h1>
+        <img id="detail-image" src="" alt="Recipe Image">
+        <p><strong>Category:</strong> <span id="detail-category"></span></p>
+        <p><strong>Cooking Time:</strong> <span id="detail-time"></span> min</p>
+        <p><strong>Posted by:</strong> <span id="detail-owner"></span></p>
+        <p><strong>Created on:</strong> <span id="detail-date"></span></p>
+        <h3>Ingredients</h3>
+        <ul id="detail-ingredients"></ul>
+        <h3>Instructions</h3>
+        <p id="detail-instructions"></p>
+      </div> <!-- closing .recipe-detail -->
+    </main>
+<!-- Footer Section -->
+<footer class="footer">
+    <div id="copyright">
+        <p>&copy; 2024 PlateMate. All rights reserved.</p>
+    </div>
+</footer>
+<script src="header.js" defer></script>
+</body>
+</html>

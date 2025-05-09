@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>PlateMate | My Recipes</title>
+    <link href="styles.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+<!-- HEADER -->
+<header class="site-header">
+    <div class="header-inner">
+        <a href="feed.html">
+            <img src="plateMate.svg" alt="PlateMate Logo" class="logo" />
+        </a>
+        <input id="search-input" type="text"
+               placeholder="Search my recipes…"
+               class="search-bar" />
+        <div class="user-dropdown">
+            <button id="username-display" class="username-display">👤</button>
+            <div id="user-menu" class="user-menu hidden">
+                <button onclick="window.location.href='myposts.html'">My Posts</button>
+                <button id="logout-btn">Log Out</button>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="feed-container">
+    <div class="filter-bar">
+        <h2 class="feed-title">My Recipes</h2>
+    </div>
+    <div id="recipe-grid" class="recipe-grid"></div>
+</main>
+
+<script src="scripts.js"></script>
+<script src="feed.js"></script>
+<script src="header.js" defer></script>
+<script>
+  document.addEventListener("DOMContentLoaded", async () => {
+    const baseUrl = window.location.origin;
+    const resp = await fetch(`${baseUrl}/api/recipes/me`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+    });
+    const data = await resp.json();
+
+    const grid = document.getElementById("recipe-grid");
+    grid.innerHTML = "";
+    if (data.length === 0) {
+      grid.innerHTML = '<p class="no-recipes">You haven\'t posted any recipes yet.</p>';
+      return;
+    }
+
+    // Fetch user's favorite recipes for preload
+    const favResp = await fetch(`${baseUrl}/api/recipes/me/favorites`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    });
+    const favList = await favResp.json();
+    const favIds = new Set(favList.map(r => String(r.id)));
+
+    data.forEach(r => {
+      const card = document.createElement("div");
+      card.className = "recipe-card";
+
+      card.innerHTML = `
+        <div class="card-actions">
+          <button class="icon-circle edit-icon" data-id="${r.id}" data-recipe='${JSON.stringify(r)}'><i class="fa fa-pencil"></i></button>
+          <button class="icon-circle delete-icon" data-id="${r.id}"><i class="fas fa-trash" style="color: red;"></i></button>
+        </div>
+        <img src="${r.imageUrl}" alt="${r.name}">
+        <div class="recipe-content">
+          <h3>${r.name}</h3>
+          <p>⏱ ${r.cookingTime} min</p>
+          <p>📂 ${r.category}</p>
+        </div>
+        <button class="favorite-icon" data-id="${r.id}">
+          <i class="fa fa-heart"></i>
+        </button>
+      `;
+
+      // Add edit button handler before appending the card
+      const editBtn = card.querySelector(".edit-icon");
+      editBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const recipe = r;
+        document.getElementById("edit-recipe-name").value = recipe.name;
+        document.getElementById("edit-recipe-ingredients").value = recipe.ingredients.join(", ");
+        document.getElementById("edit-recipe-instructions").value = recipe.instructions;
+        document.getElementById("edit-recipe-cooking-time").value = recipe.cookingTime;
+        document.getElementById("edit-recipe-category").value = recipe.category;
+        document.getElementById("edit-recipe-image-url").value = recipe.imageUrl;
+        document.getElementById("edit-recipe-form").dataset.recipeId = recipe.id;
+
+        document.getElementById("edit-recipe-modal").classList.remove("hidden");
+      });
+
+      const deleteBtn = card.querySelector(".delete-icon");
+      deleteBtn.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        const confirmDelete = confirm("Are you sure you want to delete this recipe?");
+        if (!confirmDelete) return;
+        try {
+          const resp = await fetch(`${baseUrl}/api/recipes/${r.id}`, {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`
+            }
+          });
+          if (resp.ok) {
+            card.remove();
+          } else {
+            alert("Failed to delete recipe.");
+          }
+        } catch (err) {
+          console.error("Delete failed:", err);
+          alert("An error occurred while deleting.");
+        }
+      });
+
+      card.addEventListener("click", (e) => {
+        if (e.target.closest(".favorite-icon")) return;
+        if (e.target.closest(".edit-icon")) return;
+        if (e.target.closest(".delete-icon")) return;
+        window.location.href = `recipe.html?id=${r.id}`;
+      });
+
+      grid.appendChild(card);
+
+      // Attach favorite icon event listener and initialize state
+      const favoriteBtn = card.querySelector('.favorite-icon');
+      // Preload favorite state and red color
+      if (favIds.has(String(r.id))) {
+        favoriteBtn.classList.add('favorited');
+        favoriteBtn.querySelector('i').style.color = 'red';
+      }
+      favoriteBtn.addEventListener('click', async function (e) {
+        e.stopPropagation();
+        const isFav = favoriteBtn.classList.contains('favorited');
+        const resp = await fetch(
+          `${window.location.origin}/api/users/me/favorites/${r.id}`,
+          {
+            method: isFav ? 'DELETE' : 'POST',
+            headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+          }
+        );
+        if (!resp.ok) {
+          console.error('Favorite toggle failed', resp.status);
+          return;
+        }
+        favoriteBtn.classList.toggle('favorited');
+        // Change heart color based on state
+        const heartIcon = favoriteBtn.querySelector('i');
+        if (favoriteBtn.classList.contains('favorited')) {
+          heartIcon.style.color = 'red';
+        } else {
+          heartIcon.style.color = '';
+        }
+      });
+    });
+  });
+</script>
+
+<div id="edit-recipe-modal" class="modal hidden">
+  <div class="modal-content">
+    <span id="close-edit-modal" class="close">&times;</span>
+    <h2>Edit Recipe</h2>
+    <form id="edit-recipe-form">
+      <input id="edit-recipe-name" type="text" placeholder="Recipe Name" required />
+      <input id="edit-recipe-ingredients" type="text" placeholder="Ingredients (comma-separated)" required />
+      <textarea id="edit-recipe-instructions" placeholder="Instructions" required></textarea>
+      <input id="edit-recipe-cooking-time" type="number" placeholder="Cooking Time (minutes)" required />
+      <select id="edit-recipe-category" required>
+        <option value="" disabled selected>Category</option>
+        <option value="Breakfast">Breakfast</option>
+        <option value="Lunch">Lunch</option>
+        <option value="Dinner">Dinner</option>
+        <option value="Dessert">Dessert</option>
+        <option value="Snack">Snack</option>
+        <option value="Main">Main</option>
+        <option value="Appetizer">Appetizer</option>
+        <option value="Salad">Salad</option>
+      </select>
+      <input id="edit-recipe-image-url" type="text" placeholder="Image URL" required />
+      <button type="submit" class="submit-btn">Update</button>
+    </form>
+  </div>
+</div>
+
+<script>
+document.getElementById("close-edit-modal").addEventListener("click", () => {
+  document.getElementById("edit-recipe-modal").classList.add("hidden");
+});
+
+document.getElementById("edit-recipe-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const id = e.target.dataset.recipeId;
+  const payload = {
+    name: document.getElementById("edit-recipe-name").value,
+    ingredients: document.getElementById("edit-recipe-ingredients").value.split(",").map(i => i.trim()),
+    instructions: document.getElementById("edit-recipe-instructions").value,
+    cookingTime: parseInt(document.getElementById("edit-recipe-cooking-time").value),
+    category: document.getElementById("edit-recipe-category").value,
+    imageUrl: document.getElementById("edit-recipe-image-url").value
+  };
+
+  const resp = await fetch(`/api/recipes/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("token")}`
+    },
+    body: JSON.stringify(payload)
+  });
+
+  if (resp.ok) {
+    window.location.reload();
+  } else {
+    alert("Failed to update recipe");
+  }
+});
+</script>
+
+<footer class="footer">
+    <div id="copyright">
+        <p>&copy; 2024 PlateMate. All rights reserved.</p>
+    </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>PlateMate | Home Feed</title>
+    <link href="styles.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+<!-- HEADER -->
+<header class="site-header">
+    <div class="header-inner">
+        <!-- Logo SVG -->
+        <a href="feed.html">
+          <img src="plateMate.svg" alt="PlateMate Logo" class="logo" />
+        </a>
+        <!-- Search bar -->
+        <input id="search-input" type="text"
+               placeholder="Search recipes…"
+               class="search-bar" />
+        <!-- Username display -->
+        <div class="user-dropdown">
+          <button id="username-display" class="username-display">👤</button>
+          <div id="user-menu" class="user-menu hidden">
+            <button onclick="window.location.href='myposts.html'">My Posts</button>
+            <button id="logout-btn">Log Out</button>
+          </div>
+        </div>
+    </div>
+</header>
+
+<!-- RECIPE GRID -->
+<main class="feed-container">
+    <!-- Filter & Sort Controls -->
+    <div class="filter-bar">
+        <h2 class="feed-title">Top Recipes</h2>
+        <div class="filter-controls">
+            <select id="category-filter" class="filter-select">
+                <option value="">All Categories</option>
+                <option value="Breakfast">Breakfast</option>
+                <option value="Main">Main</option>
+                <option value="Lunch">Lunch</option>
+                <option value="Dinner">Dinner</option>
+                <option value="Dessert">Dessert</option>
+                <option value="Appetizer">Appetizer</option>
+                <option value="Salad">Salad</option>
+            </select>
+            <select id="sort-filter" class="filter-select">
+                <option value="">Sort By</option>
+                <option value="time-asc">Cooking Time ↑</option>
+                <option value="time-desc">Cooking Time ↓</option>
+                <option value="name-asc">Name A-Z</option>
+                <option value="name-desc">Name Z-A</option>
+            </select>
+            <button id="favorites-filter" class="filter-pill">My Favorites</button>
+        </div>
+    </div>
+    <div id="recipe-grid" class="recipe-grid">
+        <!-- JS will inject <div class="recipe-card">…</div> here -->
+    </div>
+
+    <!-- Simple pagination controls -->
+    <div class="pagination">
+        <button id="prev-btn" class="page-btn">Previous</button>
+        <button id="next-btn" class="page-btn">Next</button>
+    </div>
+
+    <!-- Post Recipe Floating Button -->
+    <button id="post-recipe-btn" title="Post Recipe">+</button>
+
+    <!-- Post Recipe Modal -->
+    <div id="post-recipe-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>Post a New Recipe</h2>
+            <button class="close-icon" id="close-post-modal">&times;</button>
+            <form id="post-recipe-form">
+                <input type="text" name="name" placeholder="Recipe Name" required autocomplete="off" />
+                <input type="text" name="ingredients" placeholder="Ingredients (comma-separated)" required autocomplete="off" />
+                <textarea name="instructions" placeholder="Instructions" required autocomplete="off"></textarea>
+                <input type="number" name="cookingTime" placeholder="Cooking Time (minutes)" required autocomplete="off" />
+                <select name="category" required autocomplete="off">
+                  <option value="">Select a Category</option>
+                  <option value="Breakfast">Breakfast</option>
+                  <option value="Main">Main</option>
+                  <option value="Lunch">Lunch</option>
+                  <option value="Dinner">Dinner</option>
+                  <option value="Dessert">Dessert</option>
+                  <option value="Appetizer">Appetizer</option>
+                  <option value="Salad">Salad</option>
+                </select>
+                <input type="url" name="imageUrl" placeholder="Image URL" required autocomplete="off" />
+                <div class="form-actions">
+                    <button type="submit">Post</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+
+<script src="scripts.js"></script>
+<script src="feed.js"></script>
+<script src="header.js" defer></script>
+<!-- Footer Section -->
+<footer class="footer">
+    <div id="copyright">
+        <p>&copy; 2024 PlateMate. All rights reserved.</p>
+    </div>
+</footer>
+</body>
+</html>

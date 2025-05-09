@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PlateMate | Auth</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="auth-container">
+  <div class="auth-card" id="login-card">
+    <h2 class="auth-title">Log In to PlateMate</h2>
+    <form id="login-form" class="auth-form">
+      <label for="login-username">Username</label>
+      <input id="login-username" name="username" type="text" placeholder="Enter username" required autocomplete="off" />
+      <label for="login-password">Password</label>
+      <input id="login-password" name="password" type="password" placeholder="Enter password" required autocomplete="off" />
+      <!-- Error message displayed above button -->
+      <p id="login-error" class="error-message hidden"></p>
+      <button type="submit" class="auth-button">Log In</button>
+    </form>
+    <p class="toggle-text">
+      Don't have an account? <a href="#" id="show-register">Sign Up</a>
+    </p>
+  </div>
+  <div class="auth-card hidden" id="register-card">
+    <h2 class="auth-title">Sign Up for PlateMate</h2>
+    <form id="register-form" class="auth-form">
+      <label for="reg-username">Username</label>
+      <input id="reg-username" name="username" type="text" placeholder="Choose username" required autocomplete="off" />
+      <label for="reg-email">Email</label>
+      <input id="reg-email" name="email" type="email" placeholder="Enter email" required autocomplete="off" />
+      <label for="reg-password">Password</label>
+      <input id="reg-password" name="password" type="password" placeholder="Choose password" required autocomplete="off" />
+      <button type="submit" class="auth-button">Sign Up</button>
+    </form>
+    <p class="toggle-text">
+      Already have an account? <a href="#" id="show-login">Log In</a>
+    </p>
+  </div>
+</div>
+<script src="scripts.js"></script>
+</body>
+</html>
